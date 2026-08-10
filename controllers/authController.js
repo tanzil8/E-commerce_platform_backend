@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken"
 
 export const signupUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password,type } = req.body;
     const existUser = await user.findOne({ email });
     if (existUser) {
       return res.status(4001).json({ message: "user already exists" });
@@ -15,6 +15,7 @@ export const signupUser = async (req, res) => {
       name,
       email,
       password: hashPassword,
+      type
     });
 
     res.status(200).json({ message: "user registered successfully" });
@@ -26,7 +27,7 @@ export const signupUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, type } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ message: "Email and password are required" });
@@ -57,6 +58,7 @@ export const loginUser = async (req, res) => {
         id: foundUser._id,
         name: foundUser.name,
         email: foundUser.email,
+        type: foundUser.type
       },
     });
   } catch (error) {
