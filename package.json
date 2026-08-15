@@ -20,6 +20,7 @@
   "homepage": "https://github.com/tanzil8/E-commerce_platform_backend#readme",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "cloudinary": "^2.10.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
