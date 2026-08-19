@@ -1,7 +1,7 @@
 import express from "express";
 import fs from "fs";
-import { upload, handleUploadError } from "../utils/multer.js";
-import cloudinary from "../utils/cloudinary.js";
+import { upload, handleUploadError } from "../middleware/multer.js";
+import cloudinary from "../middleware/cloudinary.js";
 import product from "../models/product.js";
 
 const router = express.Router();

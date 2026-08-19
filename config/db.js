@@ -4,6 +4,8 @@ import dns from "dns"
 dotenv.config()
 
 dns.setServers(["1.1.1.1", "8.8.8.8"])
+console.log(process.env.MONGODB_URI);
+
 
 const connectDB = async () =>{
 
