@@ -23,6 +23,7 @@ router.post("/upload", (req, res, next) => {
             const newProduct = new product({
                 title: req.body.title,
                 description: req.body.description,
+                price: req.body.price,
                 category: req.body.category,
                 image: result.secure_url,
                 stock: req.body.stock,
@@ -115,6 +116,7 @@ router.put("/update/:id", (req, res, next) => {
             const updateData = {
                 title: req.body.title || existingProduct.title,
                 description: req.body.description || existingProduct.description,
+                price: req.body.price || existingProduct.price,
                 category: req.body.category || existingProduct.category,
                 stock: req.body.stock || existingProduct.stock,
             };
