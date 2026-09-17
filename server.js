@@ -1,5 +1,5 @@
 import express from "express";
-import dotenv from "dotenv"
+import dotenv from "dotenv";
 import cors from "cors";
 import mongoose from "mongoose";
 import dns from "dns";
@@ -7,10 +7,14 @@ import dns from "dns";
 import router from "./routers/userRouter.js";
 import cloudinaryRU from "./routers/cloudnary.js";
 
-
-// ✅ Kuch ISPs/networks mongodb+srv:// ka SRV DNS record resolve nahi kar pate,
+// ✅ Kuch ISPs/networks (local dev) mongodb+srv:// ka SRV DNS record resolve nahi kar pate,
 // isi wajah se "querySrv ECONNREFUSED" error aata hai. Cloudflare/Google DNS force karne se fix ho jata hai.
-dns.setServers(["1.1.1.1", "8.8.8.8"]);
+// try/catch mein rakha hai taake production (Vercel) mein agar ye fail ho to poori function crash na ho.
+try {
+  dns.setServers(["1.1.1.1", "8.8.8.8"]);
+} catch (err) {
+  console.error("dns.setServers failed, continuing with default DNS:", err.message);
+}
 
 dotenv.config();
 
@@ -49,8 +53,6 @@ async function connectToMongoDB() {
   cached.conn = await cached.promise;
   return cached.conn;
 }
-console.log(process.env.MONGODB_URI);
-
 
 // ✅ Middleware with error handling (VERY IMPORTANT) - har request se pehle DB connect
 app.use(async (req, res, next) => {
