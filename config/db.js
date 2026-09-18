@@ -1,23 +1,36 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import dns from "dns"
-dotenv.config()
+import dns from "dns";
 
-dns.setServers(["1.1.1.1", "8.8.8.8"])
-console.log(process.env.MONGODB_URI);
+dotenv.config();
 
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
-const connectDB = async () =>{
+console.log("MONGODB_URI:", process.env.MONGODB_URI);
 
-    try {
-      await mongoose.connect(process.env.MONGODB_URI)
-      console.log('MongoDB connect');
-      
-    } catch (error) {
-        console.log(error.message);
-        
+let isConnected = false;
+
+async function connectDB() {
+    if (isConnected) {
+        return;
     }
 
+    try {
+        await mongoose.connect(process.env.MONGODB_URI);
+
+        isConnected = true;
+
+        console.log("MongoDB connected successfully");
+    } catch (error) {
+        isConnected = false;
+
+        console.error("MongoDB connection failed:");
+        console.error(error.message);
+
+        throw error;
+    }
 }
 
-export default connectDB
+
+
+export default connectDB;

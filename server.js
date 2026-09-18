@@ -25,4 +25,17 @@ app.listen(process.env.PORT, () => {
   console.log("server is runing");
 });
 
-connectDB();
+
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Database connection failed"
+        });
+    }
+});
+
+export default app;
