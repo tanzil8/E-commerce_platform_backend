@@ -21,9 +21,9 @@ app.get("/", (req, res) => {
   res.send("Hello world");
 });
 
-app.listen(process.env.PORT, () => {
-  console.log("server is runing");
-});
+if (process.env.NODE_ENV !== "production") {
+  app.listen(process.env.PORT || 5000, () => console.log("Server running"));
+}
 
 
 app.use(async (req, res, next) => {

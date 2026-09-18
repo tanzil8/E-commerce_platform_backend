@@ -7,7 +7,6 @@
   "scripts": {
     "start": "node server.js",
     "vercel-start": "node server.js"
-   
   },
   "repository": {
     "type": "git",
@@ -21,7 +20,7 @@
   },
   "homepage": "https://github.com/tanzil8/E-commerce_platform_backend#readme",
   "dependencies": {
-    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.3",
     "cloudinary": "^2.10.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
