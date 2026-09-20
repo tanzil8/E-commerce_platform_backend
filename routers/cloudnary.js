@@ -1,10 +1,19 @@
 import express from "express";
-import fs from "fs";
 import { upload, handleUploadError } from "../middleware/multer.js";
 import cloudinary from "../middleware/cloudinary.js";
 import product from "../model/product.js";
 
 const router = express.Router();
+
+// Buffer (RAM) se seedha Cloudinary pe upload, disk ki zaroorat nahi
+const uploadBuffer = (buffer, options = {}) =>
+    new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+            { resource_type: "auto", ...options },
+            (error, result) => (error ? reject(error) : resolve(result))
+        );
+        stream.end(buffer);
+    });
 
 // ============ CREATE: Upload product with image ============
 router.post("/upload", (req, res, next) => {
@@ -16,9 +25,7 @@ router.post("/upload", (req, res, next) => {
         }
 
         try {
-            const result = await cloudinary.uploader.upload(req.file.path, {
-                resource_type: "auto", // handles images, pdf, video etc.
-            });
+            const result = await uploadBuffer(req.file.buffer);
 
             const newProduct = new product({
                 title: req.body.title,
@@ -45,13 +52,6 @@ router.post("/upload", (req, res, next) => {
             res.status(500).json({
                 error: "Cloudinary upload failed",
                 details: uploadErr.message,
-            });
-        } finally {
-            // Clean up local temp file regardless of success/failure
-            fs.unlink(req.file.path, (unlinkErr) => {
-                if (unlinkErr) {
-                    console.error("Failed to delete local file:", unlinkErr);
-                }
             });
         }
     });
@@ -130,9 +130,7 @@ router.put("/update/:id", (req, res, next) => {
                     }
 
                     // Upload new image
-                    const result = await cloudinary.uploader.upload(req.file.path, {
-                        resource_type: "auto",
-                    });
+                    const result = await uploadBuffer(req.file.buffer);
 
                     updateData.image = result.secure_url;
                     updateData.cloudinary_id = result.public_id;
@@ -160,15 +158,6 @@ router.put("/update/:id", (req, res, next) => {
                 error: "Failed to update product",
                 details: err.message,
             });
-        } finally {
-            // Clean up local temp file if uploaded
-            if (req.file) {
-                fs.unlink(req.file.path, (unlinkErr) => {
-                    if (unlinkErr) {
-                        console.error("Failed to delete local file:", unlinkErr);
-                    }
-                });
-            }
         }
     });
 });
