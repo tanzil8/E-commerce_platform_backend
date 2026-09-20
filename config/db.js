@@ -4,33 +4,34 @@ import dns from "dns";
 
 dotenv.config();
 
-dns.setServers(["1.1.1.1", "8.8.8.8"]);
-
-console.log("MONGODB_URI:", process.env.MONGODB_URI);
-
-let isConnected = false;
-
-async function connectDB() {
-    if (isConnected) {
-        return;
-    }
-
-    try {
-        await mongoose.connect(process.env.MONGODB_URI);
-
-        isConnected = true;
-
-        console.log("MongoDB connected successfully");
-    } catch (error) {
-        isConnected = false;
-
-        console.error("MongoDB connection failed:");
-        console.error(error.message);
-
-        throw error;
-    }
+// Sirf local development ke liye (ISP DNS issue)
+if (process.env.NODE_ENV !== "production") {
+  dns.setServers(["1.1.1.1", "8.8.8.8"]);
 }
 
+let connectionPromise = null;
 
+mongoose.connection.on("disconnected", () => {
+  connectionPromise = null;
+});
+
+async function connectDB() {
+  if (mongoose.connection.readyState === 1) return;
+
+  if (!connectionPromise) {
+    connectionPromise = mongoose
+      .connect(process.env.MONGODB_URI, {
+        serverSelectionTimeoutMS: 5000,
+      })
+      .then(() => console.log("MongoDB connected successfully"))
+      .catch((error) => {
+        connectionPromise = null;
+        console.error("MongoDB connection failed:", error.message);
+        throw error;
+      });
+  }
+
+  await connectionPromise;
+}
 
 export default connectDB;
