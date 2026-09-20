@@ -20,6 +20,7 @@ app.use(async (req, res, next) => {
     res.status(500).json({
       success: false,
       message: "Database connection failed",
+      reason: error.message, // TEMPORARY: masla hal hone ke baad ye line hata do
     });
   }
 });
